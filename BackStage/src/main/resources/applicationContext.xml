@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx    http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop   http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 是用于激活那些已经在spring容器里注册过的bean（无论是通过xml的方式还是通过package sanning的方式）上面的注解。 -->
+    <!--<context:annotation-config/>-->
+    <!-- 扫描service包下所有使用注解的类型 -->
+    <!-- 除了具有<context:annotation-config>的功能之外，<context:component-scan>还可以在指定的package下扫描以及注册javabean 。 -->
+    <context:component-scan base-package="com.blog.me.service" >
+        <!--因为在Spring已经开启扫描Controller的扫描,所以这里可以忽略Controller注解-->
+        <!--<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>-->
+    </context:component-scan>
+
+    <!-- 数据库配置文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true" system-properties-mode="NEVER"/>
+
+    <!--注册数据源  使用阿里巴巴的druid连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.userName}" />
+        <property name="password" value="${jdbc.password}" />
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="1" />
+        <property name="minIdle" value="1" />
+        <property name="maxActive" value="10" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="10000" />
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="testWhileIdle" value="true" />
+        <!-- 这里建议配置为TRUE，防止取到的连接不可用 -->
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="false" />
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="false" />
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="-1" />
+        <!-- 这里配置提交方式，默认就是TRUE，可以不用配置 -->
+        <property name="defaultAutoCommit" value="true" />
+        <!-- 验证连接有效与否的SQL，不同的数据配置不同 -->
+        <property name="validationQuery" value="select 1 " />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1800" />
+        <property name="filters" value="stat" />
+        <property name="proxyFilters">
+            <list>
+                <ref bean="logFilter" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
+        <property name="statementLogEnabled" value="true" />
+    </bean>
+
+    <!-- mybaits配置,注册SqlSessionFactory 工厂-->
+    <bean id="SqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--给工厂配置连接池数据源-->
+        <property name="dataSource" ref="dataSource"></property>
+        <!--加载 mybatis 的全局配置文件 -->
+        <!--<property name="configLocation" value="classpath:SqlMapConfig.xml"></property>-->
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath*:mapping/*.xml"></property>
+    </bean>
+
+    <!--配置 Mapper 扫描器 注册Mapper的包扫描 代替了Mappers标签-->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.blog.me.dao"></property>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+
+
+    <!--************配置事务*************************-->
+    <!--1.注册事务管理器(需要依赖数据源)-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--2.配置事务建议(规则) 事务传播特性-->
+    <!--<tx:advice transaction-manager="transactionManager" id="adviceId">-->
+        <!--<tx:attributes>-->
+            <!--&lt;!&ndash;propagation="REQUIRED"代表支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择&ndash;&gt;-->
+            <!--&lt;!&ndash;propagation="SUPPORTS" 支持当前事务，如果当前没有事务，就以非事务方式执行。 &ndash;&gt;-->
+            <!--&lt;!&ndash;read-only   事务是否只读？&ndash;&gt;-->
+            <!--<tx:method name="find*" read-only="true"/>-->
+            <!--<tx:method name="select*" read-only="true"/>-->
+            <!--<tx:method name="save*" read-only="false" propagation="REQUIRED"/>-->
+            <!--<tx:method name="update*" read-only="false" propagation="REQUIRED"/>-->
+            <!--<tx:method name="delete*" read-only="false" propagation="REQUIRED"/>-->
+            <!--<tx:method name="insert*" read-only="false" propagation="REQUIRED"/>-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+
+    <!--配置Aop 配置参与事务的类-->
+    <!--<aop:config>-->
+        <!--&lt;!&ndash;配置切入点: aop:pointcut 切入点: 标签配置参与事务的类&ndash;&gt;-->
+        <!--<aop:pointcut id="pointCutId" expression="execution(* com.itheima.service.Impl.*.*(..))"></aop:pointcut>-->
+        <!--&lt;!&ndash;配置切面 aop:advisor标签就是把上面我们所配置的事务管理两部分属性整合起来作为整个事务管理&ndash;&gt;-->
+        <!--<aop:advisor advice-ref="adviceId" pointcut-ref="pointCutId"></aop:advisor>-->
+    <!--</aop:config>-->
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!--************配置事务结束**********************-->
+
+</beans>

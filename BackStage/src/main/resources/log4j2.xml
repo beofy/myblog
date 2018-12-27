@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    status : 这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,会看到log4j2内部各种详细输出
+    monitorInterval : Log4j能够自动检测修改配置文件和重新配置本身, 设置间隔秒数。
+-->
+<Configuration status="debug" monitorInterval="1800">
+    <properties>
+        <!-- 配置日志文件输出目录 -->
+        <!--linux-->
+        <!--<property name="LOG_HOME">${sys:catalina.home}/logs</property>-->
+        <!--windows-->
+        <property name="LOG_HOME">./logs</property>
+        <!-- 配置日志文件名称 -->
+        <property name="FILE_NAME">myblog</property>
+    </properties>
+
+    <Appenders>
+        <!--输出控制台的配置-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <!-- 输出到文件的配置 -->
+        <RollingRandomAccessFile name="file"  fileName="${LOG_HOME}/${FILE_NAME}.log" filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 配置日志的根节点 -->
+        <asyncRoot level="info">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="file"/>
+        </asyncRoot >
+        <!-- 应用的日志配置，不继承Root级别配置 -->
+        <AsyncLogger name="com.blog.me" level="debug" includeLocation="true" additivity="false">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="file"/>
+        </AsyncLogger>
+
+    </Loggers>
+</Configuration>
