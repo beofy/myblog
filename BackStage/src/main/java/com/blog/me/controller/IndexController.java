@@ -15,8 +15,7 @@ public class IndexController {
     public String indexPage(){
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code",200);
-        jsonObject.put("msg","响应成功");
-
+        jsonObject.put("msg","success");
         return jsonObject.toString();
     }
 }
