@@ -30,4 +30,8 @@
         <property name="prefix" value="/views/" />
         <property name="suffix" value=".jsp"/>
     </bean>
+
+    <!-- 静态资源路劲 -->
+    <mvc:resources mapping="/public/**" location="/public/"/>
+    <mvc:resources mapping="/pages/**" location="/pages/"/>
 </beans>
