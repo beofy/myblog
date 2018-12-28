@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class IndexController {
 
 
-    @GetMapping(value = "/index.html")
+    @GetMapping(value = "/")
     @ResponseBody
     public String indexPage(){
         JSONObject jsonObject = new JSONObject();
