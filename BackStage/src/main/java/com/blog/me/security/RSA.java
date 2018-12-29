@@ -19,7 +19,10 @@ public class RSA {
 
     private PrivateKey privateKey;
     private PublicKey publicKey;
-    public static final String ALGORITHM = "RSA";
+    /** 加密算法:RSA */
+    private static final String ALGORITHM = "RSA";
+    /** 签名算法：MD5withRSA or SHA1withRSA */
+    private static final String SIGNATURE_ALGORITHM = "MD5withRSA";
     private static final int SIZE = 1024;
 
     public void initKey(){
@@ -41,7 +44,11 @@ public class RSA {
         this.publicKey= keyPair.getPublic();
     }
 
-    //公钥-加密
+    /**
+     * 公钥-加密
+     * @param data
+     * @return
+     */
     public String publicKeyEncrypt(String data){
         try {
             Cipher cipher =  Cipher.getInstance(this.ALGORITHM);
@@ -65,7 +72,11 @@ public class RSA {
         return null;
     }
 
-    //私钥-解密
+    /**
+     * 私钥-解密
+     * @param data
+     * @return
+     */
     public String privateKeyDecrypt(String data){
         try {
             Cipher cipher = Cipher.getInstance(this.ALGORITHM);
@@ -88,7 +99,11 @@ public class RSA {
         return null;
     }
 
-    //私钥-加密
+    /**
+     * 私钥-加密
+     * @param data
+     * @return
+     */
     public String privateKeyEncrypt(String data){
         try {
             Cipher cipher =  Cipher.getInstance(this.ALGORITHM);
@@ -112,7 +127,11 @@ public class RSA {
         return null;
     }
 
-    //公钥-解密
+    /**
+     * 公钥-解密
+     * @param data
+     * @return
+     */
     public String publicKeyDecrypt(String data){
         try {
             Cipher cipher = Cipher.getInstance(this.ALGORITHM);
@@ -135,21 +154,77 @@ public class RSA {
         return null;
     }
 
+    /**
+     * 私钥-签名
+     * @param data 签名的数据
+     * @return
+     */
+    public String sign(String data){
+        try {
+            Signature signature = Signature.getInstance(this.SIGNATURE_ALGORITHM);
+            signature.initSign(this.privateKey);
+            signature.update(data.getBytes("utf-8"));
+            byte[] signBytes = signature.sign();
+            return new BASE64Encoder().encode(signBytes);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+    /**
+     * 公钥-验签
+     * @param data  验签的数据
+     * @param sign  数据的签名
+     * @return
+     */
+    public boolean verify(String data,String sign){
+        try {
+            byte[] dataBytes = data.getBytes("utf-8");
+            byte[] signBytes = new BASE64Decoder().decodeBuffer(sign);
+            Signature signature = Signature.getInstance(this.SIGNATURE_ALGORITHM);
+            signature.initVerify(this.publicKey);
+            signature.update(dataBytes);
+            return signature.verify(signBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-
-    //私钥
+    /**
+     * 获取私钥
+     * @return
+     */
     public String getPrivateKey(){
         return new BASE64Encoder().encode(this.privateKey.getEncoded());
     }
 
-    //公钥
+    /**
+     * 获取公钥
+     * @return
+     */
     public String getPublickey(){
         return new BASE64Encoder().encode(this.publicKey.getEncoded());
     }
 
-
-    //私钥
+    /**
+     * 私钥
+     * @param privateKey
+     * @return
+     */
     public static PrivateKey getPrivateKey(String privateKey){
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
@@ -167,7 +242,11 @@ public class RSA {
         return null;
     }
 
-    //公钥
+    /**
+     * 公钥
+     * @param publicKey
+     * @return
+     */
     public static PublicKey getPublicKey(String publicKey){
         //通过X509编码的Key指令获得公钥对象
         try {
