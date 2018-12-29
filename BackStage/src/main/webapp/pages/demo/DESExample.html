@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DES加密</title>
+    <script data-main="/public/js/boot.js" src="/public/js/lib/require.js"></script>
+</head>
+<body>
+<label for="key">Private Key</label><br/>
+<textarea id="key" rows="15" cols="100">218n3e2098y</textarea><br/>
+<label for="input">Text to encrypt:</label><br/>
+
+<textarea id="input" name="input" type="text" rows=4 cols=100>This is a test!</textarea><br/>
+
+<input id="encrypt" type="button" value="加密" />
+<input id="decrypt" type="button" value="解密" /><br/>
+
+
+</body>
+<script>
+    require(["boot"],function () {
+        require(["jquery","crypto-js"],function () {
+            //加密
+            $('#encrypt').click(function() {
+                var key = $("#key").val();
+                var keyHex = CryptoJS.enc.Utf8.parse(key);
+                var message = $("#input").val();
+
+                var encrypted = CryptoJS.DES.encrypt(message, keyHex, {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                console.log(encrypted.toString());
+            });
+
+
+            //解密
+            $('#decrypt').click(function() {
+                var key = $("#key").val();
+                var keyHex = CryptoJS.enc.Utf8.parse(key);
+                var message = $("#input").val();
+                var decrypted = CryptoJS.DES.decrypt({
+                    ciphertext: CryptoJS.enc.Base64.parse(message)
+                }, keyHex, {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+                console.log(decrypted.toString(CryptoJS.enc.Utf8));
+            });
+        });
+    })
+
+
+</script>
+</html>
