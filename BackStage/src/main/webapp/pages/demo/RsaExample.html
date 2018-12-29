@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>rsa加密</title>
+    <script data-main="/public/js/boot.js" src="/public/js/lib/require.js"></script>
+</head>
+<body>
+<label for="privkey">Private Key</label><br/>
+<textarea id="privkey" rows="15" cols="100">-----BEGIN RSA PRIVATE KEY-----
+MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAJeq/5N2xsk6ZY7EadaTn4nT+eCq
+Umt6EkAk3j2Maj5qsoFyCeIKL00HbCbel4XXqWJxUY3yRoNhKT4+CrDSBE/YdyFGUcDH3JKiX5u1
+IDeiwK5bGJmKxU6fAvhbS8TmJm0mzFukB9/+32R/BmFFs1705Wud+ilPv6fmjhJK9yjhAgMBAAEC
+gYB8I+CxSMUIrB24L5gZpBcvbyvV8lMn2XDaw9KMOkQz9o1JWpgwRfnVaL/jSMppKM5h3zLLpoSE
+wKBLa+jANgaEOUkbQwB0SiZoKez68Dkb8iycNCSkzs/cmoXF32tf2Bi7bmVHFSi+piXDyO9gHqS2
+W4E7Oe7OLNY5Xuw5J3CIKQJBAM8KIu41hBMaQdSpO4SVZtY9XUaObXdiG2IfpCD/SHyhsXP66NB/
+X3Jj53EiVtWEhIe3mEEc8AxxK4ma5eP5frcCQQC7iL9At6rZiBw12Y240AOqlCRvkGZ+BLNE+Hpy
+5KvQYS5kex5huOoBKkNOHKe+zJqvf3pBwcNNClNfVoi2Fv0nAkAZ9JNceakNHAWUu4KSpIg344mG
+BuUCSnJUYtMYr+hOd5bfi10UhmNY291v+XYZXnue6A1WXGJbrPRgU+LuKaERAkAul0i8sWTW6oPn
+tQcKtVNT2745oWx1PoGzTvBM/xbYjGxUNmpT6PbqFy/lhiT+uCJuG4OqNpNo3nncI8mPQ6LdAkBX
+QQ/9uivD//nOLHBHhqMK2Ygrqc/eymqrUA73nXCMANk58AWA0Fd5ZglFeLp6ZmYysjYd2M3f3UWZ
+e7XNPK2a
+-----END RSA PRIVATE KEY-----</textarea><br/>
+<label for="pubkey">Public Key</label><br/>
+<textarea id="pubkey" rows="15" cols="100">-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCXqv+TdsbJOmWOxGnWk5+J0/ngqlJrehJAJN49
+jGo+arKBcgniCi9NB2wm3peF16licVGN8kaDYSk+Pgqw0gRP2HchRlHAx9ySol+btSA3osCuWxiZ
+isVOnwL4W0vE5iZtJsxbpAff/t9kfwZhRbNe9OVrnfopT7+n5o4SSvco4QIDAQAB
+-----END PUBLIC KEY-----</textarea><br/>
+
+<label for="input">Text to encrypt:</label><br/>
+
+<textarea id="input" name="input" type="text" rows=4 cols=70>This is a test!</textarea><br/>
+
+<input id="encrypt" type="button" value="加密" />
+<input id="decrypt" type="button" value="解密" /><br/>
+<p style="color: red"> 注意：后台密钥采用pkcs8编码格式，其他格式加减密会抛出 algid parse error, not a sequence 异常</p>
+<p style="color: red"> 可用openssl转码，命令如下：</p>
+<p style="color: green"> pkcs8 -topk8 -inform PEM -in rsa_private_key.pem -outform PEM -nocrypt</p>
+</body>
+
+<script>
+    require(["boot"],function () {
+        require(["jquery","encrypt"],function () {
+            //加密
+            $('#encrypt').click(function() {
+                // Encrypt with the public key...
+                var encrypt = new JSEncrypt();
+                encrypt.setPublicKey($('#pubkey').val());
+                var encrypted = encrypt.encrypt($('#input').val());
+                $("#input").val(encrypted);
+            });
+
+            //解密
+            $('#decrypt').click(function() {
+                // Decrypt with the private key...
+                var decrypt = new JSEncrypt();
+                decrypt.setPrivateKey($('#privkey').val());
+                var uncrypted = decrypt.decrypt($('#input').val());
+                $("#input").val(uncrypted);
+            });
+        })
+    })
+
+</script>
+</html>
