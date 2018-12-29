@@ -16,5 +16,7 @@ public class DESTest {
        System.out.println("加密后的字符："+enc);
        String dec = Encrypt.decrypt3DES(enc,this.desKey);
        System.out.println("解密后的字符："+dec);
+
+       System.out.println(Encrypt.decrypt3DES("f96be7042b976a3d",this.desKey));  ;
     }
 }

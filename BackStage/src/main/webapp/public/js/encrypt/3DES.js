@@ -1,0 +1,25 @@
+require.config({
+    paths:{
+        "core":"encrypt/crypto-js/core",
+        "cipher-core":"encrypt/crypto-js/cipher-core",//des加密工具
+        "mode-ecb":"encrypt/crypto-js/mode-ecb",
+        "enc-base64":"encrypt/crypto-js/enc-base64",
+        "tripledes":"encrypt/crypto-js/tripledes",
+    },
+    shim:{
+        "cipher-core":{
+            deps:["core"]
+        },
+        "mode-ecb":{
+            deps:["cipher-core"]
+        },
+        "enc-base64":{
+            deps:["mode-ecb"]
+        },
+        "tripledes":{
+            deps:["enc-base64"]
+        }
+    }
+})
+
+define(["tripledes"]);

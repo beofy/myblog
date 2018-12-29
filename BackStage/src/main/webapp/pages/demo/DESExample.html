@@ -19,34 +19,33 @@
 </body>
 <script>
     require(["boot"],function () {
-        require(["jquery","crypto-js"],function () {
+        require(["jquery","3DES"],function () {
             //加密
             $('#encrypt').click(function() {
                 var key = $("#key").val();
                 var keyHex = CryptoJS.enc.Utf8.parse(key);
                 var message = $("#input").val();
-
                 var encrypted = CryptoJS.DES.encrypt(message, keyHex, {
                     mode: CryptoJS.mode.ECB,
                     padding: CryptoJS.pad.Pkcs7
                 });
-
-                console.log(encrypted.toString());
+                $("#input").val(encrypted);
             });
-
 
             //解密
             $('#decrypt').click(function() {
                 var key = $("#key").val();
+                //把私钥转换成16进制的字符串
                 var keyHex = CryptoJS.enc.Utf8.parse(key);
                 var message = $("#input").val();
                 var decrypted = CryptoJS.DES.decrypt({
-                    ciphertext: CryptoJS.enc.Base64.parse(message)
+                    ciphertext: CryptoJS.enc.Hex.parse(message)
                 }, keyHex, {
                     mode: CryptoJS.mode.ECB,
                     padding: CryptoJS.pad.Pkcs7
                 });
-                console.log(decrypted.toString(CryptoJS.enc.Utf8));
+                //以utf-8的形式输出解密过后内容
+                $("#input").val(decrypted.toString(CryptoJS.enc.Utf8));
             });
         });
     })
