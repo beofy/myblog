@@ -229,15 +229,16 @@ public class RSA {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             //通过PKCS#8编码的Key指令获得私钥对象
-            PKCS8EncodedKeySpec x509EncodedKeySpec = new PKCS8EncodedKeySpec(new BASE64Decoder().decodeBuffer(privateKey));
-            return keyFactory.generatePrivate(x509EncodedKeySpec);
-        }catch (NoSuchAlgorithmException e) {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(new BASE64Decoder().decodeBuffer(privateKey));
+            return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }catch (InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
+
 
         return null;
     }
@@ -248,9 +249,9 @@ public class RSA {
      * @return
      */
     public static PublicKey getPublicKey(String publicKey){
-        //通过X509编码的Key指令获得公钥对象
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            //通过X509编码的Key指令获得公钥对象
             X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(new BASE64Decoder().decodeBuffer(publicKey));
             return keyFactory.generatePublic(x509EncodedKeySpec);
         }catch (NoSuchAlgorithmException e) {
@@ -263,4 +264,11 @@ public class RSA {
         return null;
     }
 
+    public void setPrivateKey(PrivateKey privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
+    }
 }
