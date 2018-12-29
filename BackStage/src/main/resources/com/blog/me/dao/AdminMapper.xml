@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.me.dao.AdminMapper">
+    <!--<resultMap id="admin" type="com.blog.me.model.entity.t_admin">-->
+        <!--<id column="id" jdbcType="bigint" javaType="java.lang.String" property="id" />-->
+        <!--<result column="create_time" jdbcType="timestamp" javaType="java.util.Date" property="create_time" />-->
+        <!--<result column="account" jdbcType="varchar" javaType="java.lang.String" property="account" />-->
+        <!--<result column="password" jdbcType="varchar" javaType="java.lang.String" property="password"/>-->
+        <!--<result column="last_login_time" jdbcType="datetime" javaType="java.util.Date" property="last_login_time"/>-->
+        <!--<result column="last_login_ip" jdbcType="varchar" javaType="java.lang.String" property="last_login_ip"/>-->
+    <!--</resultMap>-->
+
+    <select id="findByAccountAndPassword" resultType="com.blog.me.model.entity.t_admin">
+        select * from t_admin as `admin` where `admin`.`account`  = #{account} and `admin`.`password` = #{password} limit 1
+    </select>
+</mapper>
