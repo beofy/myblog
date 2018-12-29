@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+    <script data-main="/public/js/boot.js" src="/public/js/lib/require.js"></script>
+</head>
+<body>
+    账号： <input type="text" id="account" /><br>
+    密码： <input type="password" id="password" /><br>
+    <input type="button" value="登陆" id="login"/>
+</body>
+<script>
+
+    require(['boot'],function () {
+        require(["jquery"],function () {
+
+            $("#login").click(function () {
+                var account = $("#account").val();
+                var password = $("#password").val();
+                login(account,password)
+            })
+
+        })
+    })
+
+    function login(account,password) {
+        $.ajax({
+            type : "POST",
+            url : "/admin/login",
+            data: {
+                "account":account,
+                "password":password
+            },
+            success: function(data){
+
+            }
+        })
+    }
+</script>
+
+</html>
